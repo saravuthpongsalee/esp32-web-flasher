@@ -36,10 +36,8 @@ body {
 </div>
 
 <div class="bg-gray-900 p-4 rounded-xl mb-4">
-
 <label>bootloader.bin</label>
 <input id="boot" class="w-full p-2 text-black mb-2" value="http://localhost:8000/bootloader.bin">
-
 <label>partitions.bin</label>
 <input id="part" class="w-full p-2 text-black mb-2" value="http://localhost:8000/partitions.bin">
 
@@ -49,9 +47,7 @@ body {
 <button onclick="gen()" class="bg-blue-600 px-4 py-2 rounded">สร้าง Manifest</button>
 
 </div>
-
 <textarea id="out" class="w-full h-40 text-black p-2 mb-4"></textarea>
-
 <!-- Progress -->
 <div class="w-full bg-gray-700 h-4 rounded mb-4">
   <div id="bar" class="h-4 bg-green-400 w-0 rounded"></div>
@@ -59,33 +55,24 @@ body {
 
 <!-- Buttons -->
 <div class="flex gap-4 mb-6">
-
 <esp-web-install-button id="flashBtn">
   <button slot="activate" onclick="startFlash()" class="bg-green-600 px-4 py-2 rounded">
     Flash ESP32
   </button>
 </esp-web-install-button>
-
 <button onclick="eraseFlash()" class="bg-red-600 px-4 py-2 rounded">
   Erase Flash
 </button>
-
 </div>
 
 <script>
-
 let manifestURL = null;
-
-// เวลา
 setInterval(()=>{
   document.getElementById("time").innerText =
     new Date().toLocaleString("th-TH");
 },1000);
 
-
-// สร้าง manifest
 function gen(){
-
 const m = {
   name:"ESP32",
   version:"1.0",
@@ -110,8 +97,6 @@ flashBtn.setAttribute("manifest",manifestURL);
 
 }
 
-
-// progress fake (ให้ดูโปร)
 function startFlash(){
   let p=0;
   let bar=document.getElementById("bar");
@@ -119,43 +104,25 @@ function startFlash(){
   let timer=setInterval(()=>{
     p+=5;
     bar.style.width=p+"%";
-
     if(p>=100) clearInterval(timer);
-
   },200);
 }
 
-
-// 🔥 ERASE FLASH
 async function eraseFlash(){
-
 try{
-
 const port = await navigator.serial.requestPort();
 await port.open({ baudRate: 115200 });
-
 const writer = port.writable.getWriter();
-
-// reset sequence (เข้า download mode)
 await writer.write(new Uint8Array([0x00]));
 await writer.releaseLock();
-
-alert("⚠️ กรุณากดปุ่ม BOOT ค้าง แล้วกด RESET หนึ่งครั้ง");
-
+alert("กรุณากดปุ่ม BOOT ค้าง แล้วกด RESET หนึ่งครั้ง");
 await port.close();
-
-alert("🧹 Erase mode ready (จากนั้นกด Flash ใหม่)");
-
+alert("Erase mode ready (จากนั้นกด Flash ใหม่)");
 }catch(e){
 alert("Error: "+e);
 }
-
-}
-
-
+  }
 gen();
-
 </script>
-
 </body>
 </html>
